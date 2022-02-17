@@ -10,11 +10,7 @@ output "private_subnet_ids" {
 }
 
 output "natgw_ip" {
-    value = var.private_subnet_count > 0 ? aws_eip.natgw[0].public_ip  : ""
-}
-
-output "azs" {
-    value = local.static_az_names_list
+    value = var.provision_nat_gateway ? aws_eip.natgw[0].public_ip  : ""
 }
 
 output "public_subnet_availability_zones" {

@@ -65,7 +65,21 @@ variable "public_subnet_name_tag" {
   default = "public-subnet"
 }
 
+variable "public_subnet_prefix_offset" {
+  type = number
+  default = 0
+}
+variable "private_subnet_prefix_offset" {
+  type = number
+  default = 0
+}
+
 variable "public_subnet_map_public_ip_on_launch" {
+  type = bool
+  default = true
+}
+
+variable "provision_nat_gateway" {
   type = bool
   default = true
 }
