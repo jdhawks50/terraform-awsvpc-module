@@ -1,27 +1,27 @@
 # Terraform VPC Module
 
-### What gets created
-    1 VPC
-    A configurable amount of private subnets (subnets that route to the internet via NAT Gateway)
-    A configurable amount of public subnets (subnets that route to the internet via Internet Gateway)
-    1 NAT Gateway if desired.
-    1 EIP for the NAT Gateway.
-    Route tables and route table associations.
+## What gets created
+- 1 VPC
+- A configurable amount of private subnets (subnets that route to the internet via NAT Gateway)
+- A configurable amount of public subnets (subnets that route to the internet via Internet Gateway)
+- 1 NAT Gateway if desired.
+- 1 EIP for the NAT Gateway.
+- Route tables and route table associations.
 
-### Features
-    - Configurable VPC CIDR block
-    - Configurable `default_tags`
-    - Configurable number of public and private subnets
-        - Public Subnets have a mandatory internet gateway
-        - Private subnets have an optional NAT Gateway
-    - Optional NAT Gateway creation
-    - Configurable subnet Availability Zone placement
-    - Configurable subnet offset, allowing you to customize what prefix length your subnets have
-    - Makes efficient use of the VPC cidr space:
-        - VPC CIDR block is divided in half; ie. a /24 becomes 2 /25 subnets.
-        - Prefix length for subnets is determined by `*_subnet_prefix_offset` variable
+## Features
+- Configurable VPC CIDR block
+- Configurable `default_tags`
+- Configurable number of public and private subnets
+    - Public Subnets have a mandatory internet gateway
+    - Private subnets have an optional NAT Gateway
+- Optional NAT Gateway creation
+- Configurable subnet Availability Zone placement
+- Configurable subnet offset, allowing you to customize what prefix length your subnets have
+- Makes efficient use of the VPC cidr space:
+    - VPC CIDR block is divided in half; ie. a /24 becomes 2 /25 subnets.
+    - Prefix length for subnets is determined by `*_subnet_prefix_offset` variable
 
-### Variables
+## Variables
 
 `public_subnet_az_override_list`: A list of AZ lettered-identifiers, ie. `["a","b","c"]`
 
