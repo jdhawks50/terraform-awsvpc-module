@@ -87,7 +87,7 @@ resource "aws_route_table" "private_subnet" {
 resource "aws_route_table_association" "private_subnets" {
   count =  var.private_subnet_count > 0 ? var.private_subnet_count : 0
   subnet_id      = aws_subnet.private_subnet[count.index].id
-  route_table_id = var.provision_nat_gateway ? aws_route_table.private_subnet[0].id : aws_route_table.public_subnet[0].id
+  route_table_id = var.provision_nat_gateway ? aws_route_table.private_subnet[0].id : aws_route_table.public_subnet.id
 }
 
 resource "aws_route_table_association" "public_subnets" {
