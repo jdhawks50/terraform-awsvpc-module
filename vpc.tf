@@ -66,54 +66,28 @@ resource "aws_route_table" "public_subnet" {
   }
 
   tags = {
-    Name = "default-route-table"
+    Name = "public-route-table"
   }
 }
 
 resource "aws_route_table" "private_subnet" {
+  count  = var.provision_nat_gateway ? 1 : 0
   vpc_id = aws_vpc.vpc.id
 
-  route = [
-    (
-      var.provision_nat_gateway ? {
-        cidr_block = "0.0.0.0/0"
-        nat_gateway_id = aws_nat_gateway.natgw[0].id
-        carrier_gateway_id         = ""
-        destination_prefix_list_id = ""
-        egress_only_gateway_id     = ""
-        gateway_id                 = ""
-        instance_id                = ""
-        ipv6_cidr_block            = ""
-        local_gateway_id           = ""
-        nat_gateway_id             = ""
-        network_interface_id       = ""
-        transit_gateway_id         = ""
-        vpc_endpoint_id            = ""
-        vpc_peering_connection_id  = ""
-      } : {
-        cidr_block = "0.0.0.0/0"
-        nat_gateway_id = ""
-        carrier_gateway_id         = ""
-        destination_prefix_list_id = ""
-        egress_only_gateway_id     = ""
-        gateway_id                 = aws_internet_gateway.igw.id
-        instance_id                = ""
-        ipv6_cidr_block            = ""
-        local_gateway_id           = ""
-        nat_gateway_id             = ""
-        network_interface_id       = ""
-        transit_gateway_id         = ""
-        vpc_endpoint_id            = ""
-        vpc_peering_connection_id  = ""
-      }
-    )
-  ]
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.natgw[count.index].id
+  }
+  
+  tags = {
+    Name = "private-route-table"
+  }
 }
 
 resource "aws_route_table_association" "private_subnets" {
   count =  var.private_subnet_count > 0 ? var.private_subnet_count : 0
   subnet_id      = aws_subnet.private_subnet[count.index].id
-  route_table_id = aws_route_table.private_subnet.id
+  route_table_id = var.provision_nat_gateway ? aws_route_table.private_subnet[0].id : aws_route_table.public_subnet[0].id
 }
 
 resource "aws_route_table_association" "public_subnets" {
