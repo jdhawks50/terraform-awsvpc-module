@@ -13,6 +13,7 @@ locals {
     "b",
     "c",
   ]
+  
   static_az_names_list = [
     for az in local.az_number : format("%s%s", data.aws_region.current.name, az)
   ]
@@ -82,11 +83,4 @@ variable "public_subnet_map_public_ip_on_launch" {
 variable "provision_nat_gateway" {
   type = bool
   default = true
-}
-
-variable "default_tags" {
-  type = map(string)
-  default = {
-    "project" = "jdhawks50/vpc"
-  }
 }
