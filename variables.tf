@@ -56,12 +56,12 @@ variable "vpc_name_tag_prefix" {
   default = "vpc/"
 }
 
-variable "private_subnet_name_tag" {
+variable "private_subnet_name_tag_prefix" {
   type = string
   default = "private-subnet/"
 }
 
-variable "public_subnet_name_tag" {
+variable "public_subnet_name_tag_prefix" {
   type = string
   default = "public-subnet/"
 }
