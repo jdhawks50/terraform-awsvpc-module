@@ -51,19 +51,19 @@ variable "private_subnet_count" {
   default = 3
 }
 
-variable "vpc_name_tag" {
+variable "vpc_name_tag_prefix" {
   type = string
-  default = "my-vpc"
+  default = "vpc/"
 }
 
 variable "private_subnet_name_tag" {
   type = string
-  default = "private-subnet"
+  default = "private-subnet/"
 }
 
 variable "public_subnet_name_tag" {
   type = string
-  default = "public-subnet"
+  default = "public-subnet/"
 }
 
 variable "public_subnet_prefix_offset" {
@@ -83,4 +83,13 @@ variable "public_subnet_map_public_ip_on_launch" {
 variable "provision_nat_gateway" {
   type = bool
   default = true
+}
+
+variable "public_route_table_name_tag_prefix" {
+  type = string
+  value = ""
+}
+variable "private_route_table_name_tag_prefix" {
+  type = string
+  value = ""
 }
