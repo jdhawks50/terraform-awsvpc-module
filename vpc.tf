@@ -38,7 +38,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone       = length(local.public_az_override) > 0 ? element(local.public_az_override, count.index) : element(local.static_az_names_list, count.index)
   map_public_ip_on_launch = var.public_subnet_map_public_ip_on_launch ? "true" : "false"
   tags = {
-    Name = "${var.public_subnet_name_tag}-${count.index}"
+    Name = "${var.public_subnet_name_tag}/${cidrsubnet(local.public_supernet, (var.public_subnet_prefix_offset > 0 ? var.public_subnet_prefix_offset : var.public_subnet_count), count.index)}"
   }
 }
 
@@ -53,7 +53,7 @@ resource "aws_subnet" "private_subnet" {
   availability_zone       = length(local.private_az_override) > 0 ? element(local.private_az_override, count.index) : element(local.static_az_names_list, count.index)
   map_public_ip_on_launch = "false"
   tags = {
-    Name = "${var.private_subnet_name_tag}-${count.index}"
+    Name = "${var.private_subnet_name_tag}/${cidrsubnet(local.private_supernet, (var.private_subnet_prefix_offset > 0 ? var.private_subnet_prefix_offset : var.private_subnet_count), count.index)}"
   }
 }
 
