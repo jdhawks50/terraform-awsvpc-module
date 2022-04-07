@@ -115,7 +115,7 @@ resource "aws_route_table" "public_subnet" {
   }
 
   tags = {
-    Name = "${var.public_route_table_name_tag_prefix}route-table/public"
+    Name = "${var.public_route_table_name_tag_prefix}/public"
   }
 }
 
@@ -129,7 +129,7 @@ resource "aws_route_table" "private_subnet" {
   }
   
   tags = {
-    Name = "${var.private_route_table_name_tag_prefix}route-table/private"
+    Name = "${var.private_route_table_name_tag_prefix}/private"
   }
 }
 

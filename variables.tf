@@ -58,9 +58,9 @@ variable "provision_nat_gateway" {
 
 variable "public_route_table_name_tag_prefix" {
   type = string
-  default = ""
+  default = "route-table"
 }
 variable "private_route_table_name_tag_prefix" {
   type = string
-  default = ""
+  default = "route-table"
 }
