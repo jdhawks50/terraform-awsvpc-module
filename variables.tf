@@ -1,38 +1,9 @@
-locals {
-  public_supernet = cidrsubnet(var.vpc_cidr_block, 1, 0)
-  private_supernet = cidrsubnet(var.vpc_cidr_block, 1, 1)
-  az_number = data.aws_region.current.name == "us-east-1" ? [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-  ] : [
-    "a",
-    "b",
-    "c",
-  ]
-  
-  static_az_names_list = [
-    for az in local.az_number : format("%s%s", data.aws_region.current.name, az)
-  ]
-
-  private_az_override = length(var.private_subnet_az_override_list) > 0 ? [ 
-    for az in range(0, length(var.private_subnet_az_override_list)) : format("%s%s", data.aws_region.current.name, element(var.private_subnet_az_override_list, az))
-  ] : []
-
-  public_az_override = length(var.public_subnet_az_override_list) > 0 ? [ 
-    for az in range(0, length(var.public_subnet_az_override_list)) : format("%s%s", data.aws_region.current.name, element(var.public_subnet_az_override_list, az))
-  ] : []
-}
-
-variable "public_subnet_az_override_list" {
+variable "public_subnet_availability_zones" {
   type = list(string)
   default = []
 }
 
-variable "private_subnet_az_override_list" {
+variable "private_subnet_availability_zones" {
   type = list(string)
   default = []
 }
