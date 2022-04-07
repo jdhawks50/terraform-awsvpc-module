@@ -3,6 +3,43 @@ locals {
   private_supernet = cidrsubnet(var.vpc_cidr_block, 1, 1)
 }
 
+resource "random_string" "public_subnet_names" {
+  count = var.public_subnet_count
+  special = false
+  length = 8
+}
+resource "random_string" "private_subnet_names" {
+  count = var.private_subnet_count
+  special = false
+  length = 8
+}
+
+module "private_subnets" {
+  source = "hashicorp/subnets/cidr"
+
+  base_cidr_block = local.private_supernet
+  networks = [
+    for i in range(0, var.private_subnet_count, 1):
+    {
+      name     = random_string.private_subnet_names[i].result
+      new_bits = (var.private_subnet_prefix_offset > 0 ? var.private_subnet_prefix_offset : var.private_subnet_count)
+    }
+  ]
+}
+
+module "public_subnets" {
+  source = "hashicorp/subnets/cidr"
+
+  base_cidr_block = local.public_supernet
+  networks = [
+    for i in range(0, var.public_subnet_count, 1):
+    {
+      name     = random_string.public_subnet_names[i].result
+      new_bits = (var.public_subnet_prefix_offset > 0 ? var.public_subnet_prefix_offset : var.public_subnet_count)
+    }
+  ]
+}
+
 data "aws_availability_zones" "availability_zones" {
   count =  length(var.public_subnet_availability_zones) == 0 || length(var.private_subnet_availability_zones) == 0  ? 1 : 0
   state = "available"
@@ -21,7 +58,7 @@ resource "random_shuffle" "availability_zones" {
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr_block
   tags = {
-    Name = "${var.vpc_name_tag_prefix}vpc/${var.vpc_cidr_block}"
+    Name = "${var.vpc_name_tag_prefix}/${data.aws_region.current.name}"
   }
 }
 
@@ -50,30 +87,22 @@ resource "aws_eip" "natgw" {
 resource "aws_subnet" "public_subnet" {
   count = var.public_subnet_count > 0 ? var.public_subnet_count : 0
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = cidrsubnet(
-    local.public_supernet, 
-    (var.public_subnet_prefix_offset > 0 ? var.public_subnet_prefix_offset : var.public_subnet_count), 
-    count.index
-  )
+  cidr_block              = module.public_subnets.networks[count.index].cidr_block 
   availability_zone       = length(var.public_subnet_availability_zones) > 0 ? element(var.public_subnet_availability_zones, count.index) : element(random_shuffle.availability_zones[0].result, count.index)
   map_public_ip_on_launch = var.public_subnet_map_public_ip_on_launch ? "true" : "false"
   tags = {
-    Name = "${var.public_subnet_name_tag_prefix}subnet/${cidrsubnet(local.public_supernet, (var.public_subnet_prefix_offset > 0 ? var.public_subnet_prefix_offset : var.public_subnet_count), count.index)}"
+    Name = "${var.public_subnet_name_tag_prefix}/${module.public_subnets.networks[count.index].name}"
   }
 }
 
 resource "aws_subnet" "private_subnet" {
   count = var.private_subnet_count > 0 ? var.private_subnet_count : 0
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = cidrsubnet(
-    local.private_supernet, 
-    (var.private_subnet_prefix_offset > 0 ? var.private_subnet_prefix_offset : var.private_subnet_count), 
-    count.index
-  )
+  cidr_block              = module.private_subnets.networks[count.index].cidr_block 
   availability_zone       = length(var.private_subnet_availability_zones) > 0 ? element(var.private_subnet_availability_zones, count.index) : element(random_shuffle.availability_zones[0].result, count.index)
   map_public_ip_on_launch = "false"
   tags = {
-    Name = "${var.private_subnet_name_tag_prefix}subnet/${cidrsubnet(local.private_supernet, (var.private_subnet_prefix_offset > 0 ? var.private_subnet_prefix_offset : var.private_subnet_count), count.index)}"
+    Name = "${var.private_subnet_name_tag_prefix}/${module.private_subnets.networks[count.index].name}"
   }
 }
 
@@ -86,7 +115,7 @@ resource "aws_route_table" "public_subnet" {
   }
 
   tags = {
-    Name = "${var.public_route_table_name_tag_prefix}route-table/public"
+    Name = "${var.public_route_table_name_tag_prefix}/public"
   }
 }
 
@@ -100,7 +129,7 @@ resource "aws_route_table" "private_subnet" {
   }
   
   tags = {
-    Name = "${var.private_route_table_name_tag_prefix}route-table/private"
+    Name = "${var.private_route_table_name_tag_prefix}/private"
   }
 }
 
