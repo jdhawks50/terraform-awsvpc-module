@@ -10,13 +10,5 @@ output "private_subnet_ids" {
 }
 
 output "natgw_ip" {
-    value = var.provision_nat_gateway ? aws_eip.natgw[0].public_ip  : ""
-}
-
-output "public_subnet_availability_zones" {
-  value = local.public_az_override
-}
-
-output "private_subnet_availability_zones" {
-  value = local.private_az_override
+    value = var.provision_nat_gateway ? aws_eip.natgw[0].public_ip  : null
 }

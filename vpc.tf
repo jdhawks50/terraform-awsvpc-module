@@ -1,4 +1,22 @@
+locals {
+  public_supernet = cidrsubnet(var.vpc_cidr_block, 1, 0)
+  private_supernet = cidrsubnet(var.vpc_cidr_block, 1, 1)
+}
 
+data "aws_availability_zones" "availability_zones" {
+  count =  length(var.public_subnet_availability_zones) == 0 || length(var.private_subnet_availability_zones) == 0  ? 1 : 0
+  state = "available"
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
+
+# Shuffle the AZ list for funsies
+resource "random_shuffle" "availability_zones" {
+  count =  length(var.public_subnet_availability_zones) == 0 || length(var.private_subnet_availability_zones) == 0  ? 1 : 0
+  input = data.aws_availability_zones.availability_zones[count.index].names
+}
 
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr_block
@@ -37,7 +55,7 @@ resource "aws_subnet" "public_subnet" {
     (var.public_subnet_prefix_offset > 0 ? var.public_subnet_prefix_offset : var.public_subnet_count), 
     count.index
   )
-  availability_zone       = length(local.public_az_override) > 0 ? element(local.public_az_override, count.index) : element(local.static_az_names_list, count.index)
+  availability_zone       = length(var.public_subnet_availability_zones) > 0 ? element(var.public_subnet_availability_zones, count.index) : element(random_shuffle.availability_zones[0].result, count.index)
   map_public_ip_on_launch = var.public_subnet_map_public_ip_on_launch ? "true" : "false"
   tags = {
     Name = "${var.public_subnet_name_tag_prefix}subnet/${cidrsubnet(local.public_supernet, (var.public_subnet_prefix_offset > 0 ? var.public_subnet_prefix_offset : var.public_subnet_count), count.index)}"
@@ -52,7 +70,7 @@ resource "aws_subnet" "private_subnet" {
     (var.private_subnet_prefix_offset > 0 ? var.private_subnet_prefix_offset : var.private_subnet_count), 
     count.index
   )
-  availability_zone       = length(local.private_az_override) > 0 ? element(local.private_az_override, count.index) : element(local.static_az_names_list, count.index)
+  availability_zone       = length(var.private_subnet_availability_zones) > 0 ? element(var.private_subnet_availability_zones, count.index) : element(random_shuffle.availability_zones[0].result, count.index)
   map_public_ip_on_launch = "false"
   tags = {
     Name = "${var.private_subnet_name_tag_prefix}subnet/${cidrsubnet(local.private_supernet, (var.private_subnet_prefix_offset > 0 ? var.private_subnet_prefix_offset : var.private_subnet_count), count.index)}"
