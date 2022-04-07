@@ -14,7 +14,7 @@ variable "vpc_cidr_block" {
 }
 variable "public_subnet_count" {
   type = number
-  default = 2
+  default = 3
 }
 
 variable "private_subnet_count" {
@@ -24,26 +24,26 @@ variable "private_subnet_count" {
 
 variable "vpc_name_tag_prefix" {
   type = string
-  default = "vpc/"
+  default = "vpc"
 }
 
 variable "private_subnet_name_tag_prefix" {
   type = string
-  default = "private-subnet/"
+  default = "private-subnet"
 }
 
 variable "public_subnet_name_tag_prefix" {
   type = string
-  default = "public-subnet/"
+  default = "public-subnet"
 }
 
 variable "public_subnet_prefix_offset" {
   type = number
-  default = 0
+  default = 7
 }
 variable "private_subnet_prefix_offset" {
   type = number
-  default = 0
+  default = 7
 }
 
 variable "public_subnet_map_public_ip_on_launch" {
