@@ -160,7 +160,7 @@ resource "aws_vpc_dhcp_options" "dhcp_options" {
   }
 }
 
-resource "aws_vpc_dhcp_option_association" "dhcp_options" {
+resource "aws_vpc_dhcp_options_association" "dhcp_options" {
   count = var.create_dhcp_options ? 1 : 0
   vpc_id = aws_vpc.vpc.id
   dhcp_options_id = aws_vpc_dhcp_options.dhcp_options[count.index].id
