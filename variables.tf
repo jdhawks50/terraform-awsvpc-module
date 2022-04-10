@@ -64,3 +64,39 @@ variable "private_route_table_name_tag_prefix" {
   type = string
   default = "route-table"
 }
+
+variable "create_dhcp_options" {
+  type = bool
+  default = false
+}
+
+variable "vpc_dhcp_option_domain_name" {
+  type = string
+  default = "ec2.internal"
+}
+variable "vpc_dhcp_option_domain_name_servers" {
+  type = list(string)
+  default = []
+}
+variable "vpc_dhcp_option_ntp_servers" {
+  type = list(string)
+  default = []
+}
+variable "vpc_dhcp_option_netbios_name_servers" {
+  type = list(string)
+  default = []
+}
+variable "vpc_dhcp_option_netbios_node_type" {
+  type = string
+  default = ""
+}
+
+variable "enable_dns_support" {
+  type = bool
+  default = true
+}
+
+variable "enable_dns_hostnames" {
+  type = bool
+  default = true
+}

@@ -60,6 +60,8 @@ resource "aws_vpc" "vpc" {
   tags = {
     Name = "${var.vpc_name_tag_prefix}/${data.aws_region.current.name}"
   }
+  enable_dns_hostnames = var.enable_dns_hostnames
+  enable_dns_support = var.enable_dns_support    
 }
 
 resource "aws_internet_gateway" "igw" {
@@ -143,4 +145,23 @@ resource "aws_route_table_association" "public_subnets" {
   count =  var.public_subnet_count > 0 ? var.public_subnet_count : 0
   subnet_id      = aws_subnet.public_subnet[count.index].id
   route_table_id = aws_route_table.public_subnet.id
+}
+
+resource "aws_vpc_dhcp_options" "foo" {
+  count = var.create_dhcp_options ? 1 : 0
+  domain_name          = var.vpc_dhcp_option_domain_name
+  domain_name_servers  = var.vpc_dhcp_option_domain_name_servers
+  ntp_servers          = var.vpc_dhcp_option_ntp_servers
+  netbios_name_servers = var.vpc_dhcp_option_netbios_name_servers
+  netbios_node_type    = var.vpc_dhcp_option_netbios_node_type
+
+  tags = {
+    Name = "foo-name"
+  }
+}
+
+resource "aws_vpc_dhcp_option_association" {
+  count = var.create_dhcp_options ? 1 : 0
+  vpc_id = aws_vpc.vpc.id
+  dhcp_options_id = aws_vpc_dhcp_options.dhcp_options[count.index].id
 }
