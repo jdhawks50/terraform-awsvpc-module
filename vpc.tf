@@ -147,7 +147,7 @@ resource "aws_route_table_association" "public_subnets" {
   route_table_id = aws_route_table.public_subnet.id
 }
 
-resource "aws_vpc_dhcp_options" "foo" {
+resource "aws_vpc_dhcp_options" "dhcp_options" {
   count = var.create_dhcp_options ? 1 : 0
   domain_name          = var.vpc_dhcp_option_domain_name
   domain_name_servers  = var.vpc_dhcp_option_domain_name_servers
@@ -160,7 +160,7 @@ resource "aws_vpc_dhcp_options" "foo" {
   }
 }
 
-resource "aws_vpc_dhcp_option_association" {
+resource "aws_vpc_dhcp_option_association" "dhcp_options" {
   count = var.create_dhcp_options ? 1 : 0
   vpc_id = aws_vpc.vpc.id
   dhcp_options_id = aws_vpc_dhcp_options.dhcp_options[count.index].id
