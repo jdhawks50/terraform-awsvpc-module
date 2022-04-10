@@ -76,7 +76,7 @@ variable "vpc_dhcp_option_domain_name" {
 }
 variable "vpc_dhcp_option_domain_name_servers" {
   type = list(string)
-  default = []
+  default = ["AmazonProvidedDNS"]
 }
 variable "vpc_dhcp_option_ntp_servers" {
   type = list(string)
